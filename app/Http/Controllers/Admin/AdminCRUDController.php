@@ -3,25 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Admin\AdminCRUDRepository;
+use App\Repositories\User\UserRepository;
 use Illuminate\Http\Request;
 
 class AdminCRUDController extends Controller
 {
-    protected $adminCRUDRepo;
+    protected $userRepo;
 
-    public function __construct(AdminCRUDRepository $adminCRUDRepo)
+    public function __construct(UserRepository $userRepo)
     {
-        $this->adminCRUDRepo = $adminCRUDRepo;
+        $this->userRepo = $userRepo;
     }
 
     /***
+     * get all info users, search & paginate
      * @return mixed
      */
     public function index()
     {
         $username = request()->input('username');
-        return $this->adminCRUDRepo->getAllUser($username);
+        $start_date = request()->input('start_date');
+        $end_date = request()->input('end_date');
+        $status = request()->input('status');
+        return $this->userRepo->getAllUser($username, $start_date, $end_date, $status);
     }
 
     /***
@@ -31,7 +35,7 @@ class AdminCRUDController extends Controller
      */
     public function userInfo($userId)
     {
-        return $this->adminCRUDRepo->find($userId);
+        return $this->userRepo->find($userId);
     }
 
     /***
@@ -50,13 +54,17 @@ class AdminCRUDController extends Controller
             'exp_profile' => $exp_profile,
             'level' => floor($exp_profile / 500)
         ];
-        return $this->adminCRUDRepo->update($userId, $dataUpdate);
+        return $this->userRepo->update($userId, $dataUpdate);
     }
 
-
+    /***
+     * delete user
+     * @param $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteUser($userId)
     {
-        if(!$this->adminCRUDRepo->delete($userId)){
+        if(!$this->userRepo->delete($userId)){
             return response()->json([
                 'error'=>'Delete User Failed !!!'
             ]);

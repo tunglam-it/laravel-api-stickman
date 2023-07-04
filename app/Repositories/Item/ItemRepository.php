@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Repositories\Player;
+namespace App\Repositories\Item;
 
 use App\Http\Resources\Player\ItemCurrentInfoResource;
 use App\Models\Item;
 use App\Models\ItemUser;
-use App\Models\User;
 use App\Repositories\BaseRepository;
 
-class PlayerItemRepository extends BaseRepository implements PlayerRepositoryInterface
+class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
 
     /***
@@ -17,7 +16,25 @@ class PlayerItemRepository extends BaseRepository implements PlayerRepositoryInt
      */
     public function getModel()
     {
-        return User::class;
+        return Item::class;
+    }
+
+    /***
+     * get all info users
+     * @param $name
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllItemInfo($name)
+    {
+        if ($name) {
+            $items = Item::where('name', 'like', '%' . $name . '%')->orderByDesc('id')->get();
+        } else {
+            $items = Item::orderByDesc('id')->get();
+        }
+        $response = [
+            'data' => $items,
+        ];
+        return response()->json($response, 200);
     }
 
     /***
@@ -25,7 +42,7 @@ class PlayerItemRepository extends BaseRepository implements PlayerRepositoryInt
      * @param $userId
      * @return mixed
      */
-    public function getAllItems($userId)
+    public function getAllItemsUser($userId)
     {
         $user = $this->find($userId);
         $allItem = $user->items()->get();
@@ -38,7 +55,7 @@ class PlayerItemRepository extends BaseRepository implements PlayerRepositoryInt
      */
     public function getAllItemRaw()
     {
-        $itemsRaw = Item::all();
+        $itemsRaw = $this->getAll();
         return response()->json([
             'data' => $itemsRaw,
         ]);
@@ -138,4 +155,5 @@ class PlayerItemRepository extends BaseRepository implements PlayerRepositoryInt
             return 'head_def';
         }
     }
+
 }

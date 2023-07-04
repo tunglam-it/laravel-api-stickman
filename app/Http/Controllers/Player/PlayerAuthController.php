@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Player;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Player\PlayerLoginRequest;
 use App\Http\Requests\Player\PlayerRegisterRequest;
-use App\Repositories\Player\PlayerAuthRepository;
+use App\Repositories\User\UserRepository;
 use Illuminate\Support\Facades\Hash;
 
 class PlayerAuthController extends Controller
 {
     private $playerRepo;
 
-    public function __construct(PlayerAuthRepository $playerRepo)
+    public function __construct(UserRepository $playerRepo)
     {
         $this->playerRepo = $playerRepo;
     }
@@ -26,9 +26,9 @@ class PlayerAuthController extends Controller
     {
         $player = [
             'username' => request()->username,
-            'password' => Hash::make(request()->password)
+            'password' => Hash::make(request()->password),
         ];
-        return $this->playerRepo->register($player);
+        return $this->playerRepo->registerUser($player);
     }
 
     /***
@@ -40,6 +40,12 @@ class PlayerAuthController extends Controller
     {
         $credentials = $request->only('username', 'password');
         return $this->playerRepo->handleLogin($credentials);
+    }
+
+    public function changeStatus($userId)
+    {
+        $status = request()->status;
+        $this->playerRepo->update($userId, ['status'=>$status]);
     }
 
     /***

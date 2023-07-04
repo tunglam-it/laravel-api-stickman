@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AdminLoginRequest;
-use App\Repositories\Admin\AdminAuthRepository;
+use App\Repositories\User\UserRepository;
 
 
 class AdminAuthController extends Controller
 {
-    protected $adminAuthRepo;
+    protected $userRepo;
 
-    public function __construct(AdminAuthRepository $adminAuthRepo)
+    public function __construct(UserRepository $userRepo)
     {
-        $this->adminAuthRepo = $adminAuthRepo;
+        $this->userRepo = $userRepo;
     }
 
     /***
@@ -24,7 +24,7 @@ class AdminAuthController extends Controller
     public function login(AdminLoginRequest $request)
     {
         $dataLogin = $request->all();
-        return $this->adminAuthRepo->handleLogin($dataLogin);
+        return $this->userRepo->handleLogin($dataLogin);
     }
 
     /***
@@ -33,7 +33,7 @@ class AdminAuthController extends Controller
      */
     public function logout()
     {
-        return $this->adminAuthRepo->handleLogout();
+        return $this->userRepo->handleLogout();
     }
 
     /***

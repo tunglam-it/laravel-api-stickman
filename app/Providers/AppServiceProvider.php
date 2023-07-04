@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Repositories\Admin\AdminAuthRepository;
-use App\Repositories\Admin\AdminRepositoryInterface;
+use App\Repositories\Admin\UserRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(
-            AdminRepositoryInterface::class,
+            UserRepositoryInterface::class,
             AdminAuthRepository::class
         );
     }

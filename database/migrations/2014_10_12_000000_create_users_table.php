@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('passed_stage')->default(1);
             $table->integer('exp_profile')->default(0);
             $table->integer('eliminated_enemy')->default(0);
+            $table->integer('status')->default(1)->comment('1-active, 2-unactive');
             $table->rememberToken();
             $table->timestamps();
         });
