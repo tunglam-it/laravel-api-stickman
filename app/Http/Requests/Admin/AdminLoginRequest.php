@@ -23,7 +23,7 @@ class AdminLoginRequest extends FormRequest
     {
         return [
             'username'=>'required',
-            'password'=>'required'
+            'password'=>'required|min:8'
         ];
     }
 }

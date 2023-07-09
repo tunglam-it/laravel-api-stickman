@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Player;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PlayerRegisterRequest extends FormRequest
+class UserLoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,8 @@ class PlayerRegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username'=>'required|unique:users',
-            'password'=>'required|min:8|confirmed',
-            'password_confirmation'=>'required',
+            'username'=>'required',
+            'password'=>'required|min:8'
         ];
     }
 }

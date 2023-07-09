@@ -16,17 +16,17 @@ class ChestSeeder extends Seeder
         $data = [
             [
                 'name'=>'Common Chest',
-                'type'=>0,
+                'type'=>1,
                 'price'=>60
             ]
             ,[
                 'name'=>'Rare Chest',
-                'type'=>1,
+                'type'=>2,
                 'price'=>120
             ]
             ,[
                 'name'=>'Epic Chest',
-                'type'=>2,
+                'type'=>3,
                 'price'=>200
             ]
             ,

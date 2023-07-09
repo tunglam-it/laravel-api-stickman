@@ -2,12 +2,9 @@
 
 namespace App\Repositories\User;
 
-use App\Http\Resources\Player\ItemCurrentInfoResource;
 use App\Models\Item;
-use App\Models\ItemUser;
 use App\Models\User;
 use App\Repositories\BaseRepository;
-use Illuminate\Support\Arr;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -28,33 +25,39 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      * @param $username
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAllUser($username, $start_date, $end_date, $status)
+    public function getAllUser($username, $start_date, $end_date, $status,$start_level, $end_level, $start_gold, $end_gold, $start_diamonds, $end_diamonds)
     {
         $users = User::query();
         if ($username) {
-            $users = $users->whereNotIn('username', ['admin'])->where('username', 'like', '%' . $username . '%')->orderByDesc('id');
+            $users = $users->whereNotIn('username', ['admin'])->where('username', 'like', '%' . $username . '%')->orderBy('id');
         } else {
-            $users = $users->whereNotIn('username', ['admin'])->orderByDesc('id');
+            $users = $users->whereNotIn('username', ['admin'])->orderBy('id');
         }
         if ($start_date && $end_date) {
             $users->whereBetween('created_at',[$start_date, $end_date]);
+        }
+        if ($start_gold && $end_gold) {
+            $users->whereBetween('gold',[$start_gold, $end_gold]);
+        }
+        if ($start_level && $end_level) {
+            $users->whereBetween('level',[$start_level, $end_level]);
+        }
+        if ($start_diamonds && $end_diamonds) {
+            $users->whereBetween('diamonds',[$start_diamonds, $end_diamonds]);
         }
         if ($status) {
             $users->where('status', $status);
         }
 
-        $usersPaginate = $users->paginate(5)->toArray();
-        $usersFields = ['current_page', 'first_page_url', 'from', 'last_page', 'last_page_url', 'next_page_url', 'path', 'per_page', 'prev_page_url', 'to', 'total'];
         $response = [
-            'data' => ($usersPaginate['data']),
-            'pagination' => Arr::only($usersPaginate, $usersFields)
+            'data' => ($users->paginate(5)),
         ];
         return response()->json($response, 200);
     }
 
     /***
-     * handle login for admin
-     * @param $dataLogin
+     * handle user login
+     * @param $credentials
      * @return \Illuminate\Http\JsonResponse
      */
     public function handleLogin($credentials)
@@ -62,9 +65,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Username or Password is not valid'], 401);
-            }
-            if(auth()->user()->status==2) {
-                return response()->json(['error' => 'Account has been Blocked'], 401);
             }
         } catch (JWTException $e) {
             return response()->json(['error' => 'Could not create token']);
@@ -106,4 +106,5 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             'player' => $registerPlayer
         ], 201);
     }
+
 }

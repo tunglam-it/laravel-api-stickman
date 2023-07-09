@@ -24,6 +24,7 @@ class UserInfoResource extends JsonResource
             'passed_stage'=>$this->passed_stage,
             'exp_profile'=>$this->exp_profile,
             'eliminated_enemy'=>$this->eliminated_enemy,
+            'status'=>$this->status,
             'created_at'=>date_format($this->created_at,'d-m-Y H:i:s'),
         ];
     }

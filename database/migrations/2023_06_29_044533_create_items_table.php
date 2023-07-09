@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->unsignedBigInteger('id',true);
             $table->string('name');
-            $table->integer('type')->comment('0-weapon,1-shield,2-helmet,3-accessories');
+            $table->integer('type')->comment('1-weapon,2-shield,3-helmet,4-accessories');
             $table->integer('atk');
             $table->integer('head_def');
             $table->integer('body_def');
             $table->integer('hp');
-            $table->integer('rarity')->comment('0-common,1-fine,2-rare,3-epic');
+            $table->integer('rarity')->comment('1-common,2-fine,3-rare,4-epic');
             $table->integer('stat_increment');
             $table->integer('price_increment');
             $table->integer('max_level');

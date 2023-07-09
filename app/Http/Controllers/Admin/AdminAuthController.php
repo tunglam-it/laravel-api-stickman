@@ -23,8 +23,8 @@ class AdminAuthController extends Controller
      */
     public function login(AdminLoginRequest $request)
     {
-        $dataLogin = $request->all();
-        return $this->userRepo->handleLogin($dataLogin);
+        $credentials = $request->only('username','password');
+        return $this->userRepo->handleLogin($credentials);
     }
 
     /***

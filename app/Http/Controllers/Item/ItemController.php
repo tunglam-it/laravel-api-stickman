@@ -4,18 +4,29 @@ namespace App\Http\Controllers\Item;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chest;
+use App\Models\Item;
+use App\Models\User;
 use App\Repositories\Item\ItemRepository;
+use App\Repositories\ItemUser\ItemUserRepository;
+use App\Repositories\User\UserRepository;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
     protected $itemRepo;
+    protected $itemUserRepo;
 
-    public function __construct(ItemRepository $itemRepo)
+    public function __construct(ItemRepository $itemRepo, ItemUserRepository $itemUserRepo)
     {
         $this->itemRepo = $itemRepo;
+        $this->itemUserRepo = $itemUserRepo;
     }
 
+    /***
+     * create new item
+     * @param Request $request
+     * @return mixed
+     */
     public function createNewItem(Request $request)
     {
         $dataInsert = $request->all();
@@ -29,7 +40,20 @@ class ItemController extends Controller
     public function getAllItemInfo()
     {
         $name = request()->input('name');
-        return $this->itemRepo->getAllItemInfo($name);
+        $rarity = request()->input('rarity');
+        $type = request()->input('type');
+        return $this->itemRepo->getAllItemInfo($name, $rarity, $type);
+    }
+
+    /***
+     * test
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllItemUsers()
+    {
+        $playerName = request()->input('playerName');
+        $itemName = request()->input('itemName');
+        return $this->itemUserRepo->getAllItemUsers($playerName, $itemName);
     }
 
     /***
@@ -37,10 +61,9 @@ class ItemController extends Controller
      * @param $userId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAllItemUser()
+    public function getAllItemUserById($userId)
     {
-        $userId = request()->userId;
-        $allItem = $this->itemRepo->getAllItemsUser($userId);
+        $allItem = $this->itemRepo->getAllItemsUserById($userId);
         return response()->json([
             'data' => $allItem
         ]);
@@ -67,10 +90,10 @@ class ItemController extends Controller
      * @param $itemid
      * @return false|mixed
      */
-    public function updateItemInfo(Request $request, $itemid)
+    public function updateItemInfo(Request $request, $itemId)
     {
         $dataUpdate = $request->except('id');
-        return $this->itemRepo->update($itemid, $dataUpdate);
+        return $this->itemRepo->updateItemInfo($itemId, $dataUpdate);
     }
 
     /***
@@ -80,9 +103,9 @@ class ItemController extends Controller
      */
     public function updateStatusItem()
     {
-        $statusItem = request()->status;
-        $itemId = request()->itemId;
-        return $this->itemRepo->updateStatusItem($itemId, $statusItem);
+        $oldItemId = request()->oldItemId;
+        $newItemId = request()->newItemId?request()->newItemId:'';
+        return $this->itemUserRepo->updateStatusItem($oldItemId,$newItemId);
     }
 
     /***
@@ -106,32 +129,88 @@ class ItemController extends Controller
     }
 
     /***
+     * delete item of user by itemUserId
+     * @param $itemUserId
+     * @return mixed
+     */
+    public function deleteItemUser($itemUserId)
+    {
+        return $this->itemUserRepo->delete($itemUserId);
+    }
+
+    /***
+     * give a item for a player
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function giveItemForUser()
+    {
+        $itemRawId = request()->itemRawId;
+        $userId = request()->userId;
+        return $this->itemRepo->giveItemForUser($itemRawId, $userId);
+    }
+
+    /***
      * open chest to get items
      */
-//    public function openChest()
-//    {
-//        $chest_id = request()->chest_id;//xác định đang mở hòm loại nào
-//        $randomValue = rand(0,100);
-//        if(Chest::find($chest_id)->type==0)//hòm hạng Common 84 95 100
-//        {
-//            if ($randomValue>=0 && $randomValue<=84){}
-//            elseif ($randomValue>84 && $randomValue<=95){}
-//            elseif ($randomValue>95 && $randomValue<=100){}
-//        }
-//        elseif (Chest::find($chest_id)->type==1)//hòm hàng Rare 59 79 94 100
-//        {
-//            if ($randomValue>=0 && $randomValue<=59){}
-//            elseif ($randomValue>59 && $randomValue<=79){}
-//            elseif ($randomValue>79 && $randomValue<=94){}
-//            elseif ($randomValue>94 && $randomValue<=100){}
-//        }
-//        elseif (Chest::find($chest_id)->type==2)//hòm hạng epic 49 69 86 100
-//        {
-//            if ($randomValue>=0 && $randomValue<=49){}
-//            elseif ($randomValue>49 && $randomValue<=69){}
-//            elseif ($randomValue>69 && $randomValue<=86){}
-//            elseif ($randomValue>86 && $randomValue<=100){}
-//        }
-//
-//    }
+    public function openChest()
+    {
+        $userId = request()->userId;
+        $ownDiamonds = User::find($userId)->diamonds;//lấy số kc hiệnt ại của user
+        $listItem = ['Spear', 'Shield', 'Helmet', 'Cloak'];
+        $chestId = request()->chestId;//xác định đang mở hòm loại nào
+        $chestType = Chest::find($chestId)->type;//lấy loại rương(common, rare, epic)
+        $randomValue = rand(0, 100);//random 1 số trong khaongr
+        $nameItem = $listItem[rand(0, count($listItem) - 1)];//lấy tên random từ listItem trên
+        if ($ownDiamonds > Chest::find($chestId)->price) {//check số kc
+            if ($chestType == 1)//hòm hạng Common 84 95 100
+            {
+                if ($randomValue >= 0 && $randomValue <= 84) {//với mỗi trường hợp thì sẽ so sánh tên và độ hiếm quay được bên trên với item gốc để add cho user
+                    $item = Item::where('name', $nameItem)->where('rarity', 1)->first();
+                } elseif ($randomValue > 84 && $randomValue <= 95) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 2)->first();
+                } elseif ($randomValue > 95 && $randomValue <= 100) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 3)->first();
+                }
+            } elseif ($chestType == 2)//hòm hang Rare 59 79 94 100
+            {
+                if ($randomValue >= 0 && $randomValue <= 59) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 1)->first();
+                } elseif ($randomValue > 59 && $randomValue <= 79) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 2)->first();
+                } elseif ($randomValue > 79 && $randomValue <= 94) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 3)->first();
+                } elseif ($randomValue > 94 && $randomValue <= 100) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 4)->first();
+                }
+            } elseif ($chestType == 3)//hòm hạng epic 49 69 86 100
+            {
+                if ($randomValue >= 0 && $randomValue <= 49) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 1)->first();
+                } elseif ($randomValue > 49 && $randomValue <= 69) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 2)->first();
+                } elseif ($randomValue > 69 && $randomValue <= 86) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 3)->first();
+                } elseif ($randomValue > 86 && $randomValue <= 100) {
+                    $item = Item::where('name', $nameItem)->where('rarity', 4)->first();
+                }
+            }
+            User::find($userId)->update(['diamonds'=>($ownDiamonds) - (Chest::find($chestId)->price)]);//update lại số kc sau quay số
+            $item->items()->create([//thêm mới đồ vừa quay cho user
+                'atk' => $item->atk,
+                'hp' => $item->hp,
+                'body_def' => $item->body_def,
+                'head_def' => $item->head_def,
+                'status' => 2,
+                'current_level' => 1,
+                'user_id' => $userId
+            ]);
+        }
+        else{
+            return response()->json([
+                'error' => 'You dont have enough diamonds !!!'
+            ]);
+        }
+        return $item;
+
+    }
 }

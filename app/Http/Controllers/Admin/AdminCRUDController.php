@@ -25,7 +25,13 @@ class AdminCRUDController extends Controller
         $start_date = request()->input('start_date');
         $end_date = request()->input('end_date');
         $status = request()->input('status');
-        return $this->userRepo->getAllUser($username, $start_date, $end_date, $status);
+        $start_level = request()->input('start_level');
+        $end_level = request()->input('end_level');
+        $start_gold = request()->input('start_gold');
+        $end_gold = request()->input('end_gold');
+        $start_diamonds = request()->input('start_diamonds');
+        $end_diamonds = request()->input('end_diamonds');
+        return $this->userRepo->getAllUser($username, $start_date, $end_date, $status,$start_level, $end_level, $start_gold, $end_gold, $start_diamonds, $end_diamonds);
     }
 
     /***
@@ -52,7 +58,7 @@ class AdminCRUDController extends Controller
             'diamonds' => $request->diamonds,
             'energy' => $request->energy,
             'exp_profile' => $exp_profile,
-            'level' => floor($exp_profile / 500)
+            'level' => $exp_profile===0 ? 1 : floor($exp_profile / 500)
         ];
         return $this->userRepo->update($userId, $dataUpdate);
     }
