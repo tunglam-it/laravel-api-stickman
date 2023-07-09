@@ -69,6 +69,10 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    /***
+     * relation with ItemUser Table
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function items()
     {
         return $this->hasMany(ItemUser::class);

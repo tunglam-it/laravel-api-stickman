@@ -27,7 +27,7 @@ class ItemUserRepository extends BaseRepository implements ItemUserRepositoryInt
      * @param $itemName
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAllItemUsers($playerName, $itemName)
+    public function getAllItemUsers($playerName, $itemName, $rarityItem, $typeItem, $start_level, $end_level,$status)
     {
         $itemsUser = ItemUser::query();
         if ($itemName) {
@@ -39,6 +39,33 @@ class ItemUserRepository extends BaseRepository implements ItemUserRepositoryInt
         if ($playerName) {
             $items = $itemsUser->join('users', 'users.id', '=', 'item_users.user_id')
                 ->where('users.username', 'like', '%' . $playerName . '%')
+                ->select('item_users.*')
+                ->get();
+        }
+
+        if ($rarityItem) {
+            $items = $itemsUser
+                ->join('items as i', 'i.id', '=', 'item_users.item_id')
+                ->where('i.rarity', $rarityItem)
+                ->select('item_users.*')
+                ->get();
+        }
+        if ($typeItem) {
+            $items = $itemsUser
+                ->join('items as i1', 'i1.id', '=', 'item_users.item_id')
+                ->where('i1.type', $typeItem)
+                ->select('item_users.*')
+                ->get();
+        }
+        if ($start_level && $end_level) {
+            $items = $itemsUser
+                ->whereBetween('item_users.current_level',[$start_level, $end_level])
+                ->select('item_users.*')
+                ->get();
+        }
+        if ($status) {
+            $items = $itemsUser
+                ->where('item_users.status',$status )
                 ->select('item_users.*')
                 ->get();
         }

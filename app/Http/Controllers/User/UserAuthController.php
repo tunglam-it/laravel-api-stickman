@@ -25,7 +25,7 @@ class UserAuthController extends Controller
     public function register(UserRegisterRequest $request)
     {
         $player = [
-            'username' => request()->username,
+            'username' => $request->username,
             'password' => Hash::make(request()->password),
         ];
         return $this->userRepo->registerUser($player);

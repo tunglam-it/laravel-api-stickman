@@ -20,11 +20,19 @@ class ItemUser extends Model
         'hp'
     ];
 
+    /***
+     * relation with User Table
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /***
+     * relation withItem Table
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function item()
     {
         return $this->belongsTo(Item::class);

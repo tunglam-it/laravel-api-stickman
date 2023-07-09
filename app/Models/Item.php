@@ -22,6 +22,10 @@ class Item extends Model
         'max_level'
     ];
 
+    /***
+     * Relation with ItemUser table
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function items()
     {
         return $this->hasMany(ItemUser::class);

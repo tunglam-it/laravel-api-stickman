@@ -8,7 +8,6 @@ use App\Models\Item;
 use App\Models\User;
 use App\Repositories\Item\ItemRepository;
 use App\Repositories\ItemUser\ItemUserRepository;
-use App\Repositories\User\UserRepository;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -53,7 +52,12 @@ class ItemController extends Controller
     {
         $playerName = request()->input('playerName');
         $itemName = request()->input('itemName');
-        return $this->itemUserRepo->getAllItemUsers($playerName, $itemName);
+        $rarityItem = request()->input('rarityItem');
+        $typeItem = request()->input('typeItem');
+        $start_level = request()->input('start_level');
+        $end_level = request()->input('end_level');
+        $status = request()->input('status');
+        return $this->itemUserRepo->getAllItemUsers($playerName, $itemName, $rarityItem, $typeItem, $start_level, $end_level, $status);
     }
 
     /***

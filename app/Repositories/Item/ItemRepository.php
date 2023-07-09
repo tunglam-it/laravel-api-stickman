@@ -176,6 +176,12 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         ]);
     }
 
+    /***
+     * update attribute item & adjust attribute all items of users
+     * @param $itemId
+     * @param $dataUpdate
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateItemInfo($itemId, $dataUpdate)
     {
         $this->update($itemId, $dataUpdate);//update lại data cho item gốc
