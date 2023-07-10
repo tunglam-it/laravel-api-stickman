@@ -44,6 +44,7 @@ Route::prefix('player')->group(function () {
         Route::get('/get-item-info/{itemId}', [ItemController::class, 'getItemInfo']);
         Route::put('/update-status-item', [ItemController::class, 'updateStatusItem']);
         Route::put('/upgrade-item', [ItemController::class, 'upgradeItem']);
+        Route::put('/update-user-after-battle', [UserAuthController::class, 'updateUserAfterBattle']);
         Route::put('/open-chest', [ItemController::class, 'openChest']);
     });
 });

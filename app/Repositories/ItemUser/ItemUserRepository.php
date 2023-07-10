@@ -22,10 +22,17 @@ class ItemUserRepository extends BaseRepository implements ItemUserRepositoryInt
     }
 
     /***
-     * test
+     * filter by input params
      * @param $playerName
      * @param $itemName
+     * @param $rarityItem
+     * @param $typeItem
+     * @param $start_level
+     * @param $end_level
+     * @param $status
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function getAllItemUsers($playerName, $itemName, $rarityItem, $typeItem, $start_level, $end_level,$status)
     {

@@ -86,12 +86,18 @@ class UserAuthController extends Controller
     public function updateUserAfterBattle()
     {
         $userId = request()->userId;
-        $data = ['gold' => request()->gold,
-            'diamonds' => request()->diamonds,
+        $currentExp = $this->userRepo->find($userId)->exp_profile;
+        $currentGold = $this->userRepo->find($userId)->gold;
+        $currentEliminatedEnemy = $this->userRepo->find($userId)->eliminated_enemy;
+        $currentDiamonds = $this->userRepo->find($userId)->diamonds;
+        $data = [
+            'gold' => request()->gold+$currentGold,
+            'diamonds' => request()->diamonds+$currentDiamonds,
             'passed_stage' => request()->passed_stage,
-            'exp_profile' => request()->exp_profile,
-            'eliminated_enemy' => request()->eliminated_enemy,
-            'level' => (int)request()->exp_profile==0? 1 : floor((request()->exp_profile)==0/500),];
+            'exp_profile' => request()->exp_profile+$currentExp,
+            'eliminated_enemy' => request()->eliminated_enemy+$currentEliminatedEnemy,
+            'level' => (request()->exp_profile + $currentExp)==0||(floor(((int)request()->exp_profile + $currentExp)/1000)==0)? 1 : floor(((int)request()->exp_profile + $currentExp)/1000)+1
+        ];
         return $this->userRepo->update($userId, $data);
     }
 

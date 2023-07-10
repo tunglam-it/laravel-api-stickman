@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('diamonds')->default(100);
             $table->integer('energy')->default(20);
             $table->integer('level')->default(1);
-            $table->integer('passed_stage')->default(1);
+            $table->string('passed_stage')->default('1 1');
             $table->integer('exp_profile')->default(0);
             $table->integer('eliminated_enemy')->default(0);
             $table->integer('status')->default(1)->comment('1-active, 2-unactive');

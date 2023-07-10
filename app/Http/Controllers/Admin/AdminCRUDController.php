@@ -58,7 +58,7 @@ class AdminCRUDController extends Controller
             'diamonds' => $request->diamonds,
             'energy' => $request->energy,
             'exp_profile' => $exp_profile,
-            'level' => $exp_profile===0 ? 1 : floor($exp_profile / 500)
+            'level' => $exp_profile===0 ? 1 : floor($exp_profile / 1000)
         ];
         return $this->userRepo->update($userId, $dataUpdate);
     }
