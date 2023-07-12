@@ -23,13 +23,12 @@ class ItemController extends Controller
 
     /***
      * create new item
-     * @param Request $request
      * @return mixed
      */
-    public function createNewItem(Request $request)
+    public function createNewItem()
     {
-        $dataInsert = $request->all();
-        return $this->itemRepo->create($dataInsert);
+//        $dataInsert = request()->all();
+        return $this->itemRepo->create(request()->all());
     }
 
     /***
@@ -42,6 +41,11 @@ class ItemController extends Controller
         $rarity = request()->input('rarity');
         $type = request()->input('type');
         return $this->itemRepo->getAllItemInfo($name, $rarity, $type);
+    }
+
+    public function getAllItemInfo1()
+    {
+        return $this->itemRepo->getAll();
     }
 
     /***

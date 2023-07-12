@@ -34,6 +34,11 @@ class AdminCRUDController extends Controller
         return $this->userRepo->getAllUser($username, $start_date, $end_date, $status,$start_level, $end_level, $start_gold, $end_gold, $start_diamonds, $end_diamonds);
     }
 
+    public function index1()
+    {
+        return $this->userRepo->getAll();
+    }
+
     /***
      * get info user by userId
      * @param $userId
@@ -58,7 +63,7 @@ class AdminCRUDController extends Controller
             'diamonds' => $request->diamonds,
             'energy' => $request->energy,
             'exp_profile' => $exp_profile,
-            'level' => $exp_profile===0 ? 1 : floor($exp_profile / 1000)
+            'level' => ($exp_profile===0 || floor($exp_profile/1000===0)) ? 1 : floor($exp_profile / 1000)+1
         ];
         return $this->userRepo->update($userId, $dataUpdate);
     }

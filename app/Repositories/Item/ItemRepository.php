@@ -10,7 +10,6 @@ use App\Repositories\BaseRepository;
 
 class ItemRepository extends BaseRepository implements ItemRepositoryInterface
 {
-
     /***
      * get model
      * @return string
@@ -187,24 +186,23 @@ class ItemRepository extends BaseRepository implements ItemRepositoryInterface
         $this->update($itemId, $dataUpdate);//update lại data cho item gốc
         $itemsUsers = ItemUser::all();//lấy list items của mọi user
         $itemRaw = $this->find($itemId);//lấy info item gốc
-        $rarityRaw= $itemRaw->rarity;//lấy rarity của item gốc
+        $rarityRaw = $itemRaw->rarity;//lấy rarity của item gốc
         $attributeItemRaw = $this->getAttributeItem($itemRaw);//lấy tên chỉ số của item gốc (atk, hp,....)
         $statItemIncrement = $itemRaw->stat_increment;//lấy độ tăng chỉ số khi upgrade của item gốc
-
-         foreach ($itemsUsers as $itemUser) {//quét mảng
-             $rarityItemUser = ItemUser::find($itemUser->item_id)->item->rarity;//lấy rarity của item của user hiện tại
-             $attributeItemUser = $this->getAttributeItem($itemUser);//lấy tên chỉ số của item của user
-             if($attributeItemRaw == $attributeItemUser && $rarityRaw==$rarityItemUser){//nếu cùng rarity và tên chỉ số mới thực hiện
-                 $itemUser->update([
-                     $attributeItemUser => $dataUpdate[$attributeItemUser] + $statItemIncrement * ($itemUser->current_level-1)//update lại chỉ số item user sau khi chỉnh sửa chỉ số item gốc
-                 ]);
-             }
-         }
-         return response()->json([
-             'data'=>[
-                 'message'=>'ok'
-             ]
-         ]);
+        foreach ($itemsUsers as $itemUser) {//quét mảng
+            $rarityItemUser = ItemUser::find($itemUser->item_id)->item->rarity;//lấy rarity của item của user hiện tại
+            $attributeItemUser = $this->getAttributeItem($itemUser);//lấy tên chỉ số của item của user
+            if ($attributeItemRaw == $attributeItemUser && $rarityRaw == $rarityItemUser) {//nếu cùng rarity và tên chỉ số mới thực hiện
+                $itemUser->update([
+                    $attributeItemUser => $dataUpdate[$attributeItemUser] + $statItemIncrement * ($itemUser->current_level - 1)//update lại chỉ số item user sau khi chỉnh sửa chỉ số item gốc
+                ]);
+            }
+        }
+        return response()->json([
+            'data' => [
+                'message' => 'ok'
+            ]
+        ]);
     }
 
     /***

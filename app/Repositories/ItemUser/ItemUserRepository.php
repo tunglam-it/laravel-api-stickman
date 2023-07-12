@@ -34,7 +34,7 @@ class ItemUserRepository extends BaseRepository implements ItemUserRepositoryInt
      * @throws \Psr\Container\ContainerExceptionInterface
      * @throws \Psr\Container\NotFoundExceptionInterface
      */
-    public function getAllItemUsers($playerName, $itemName, $rarityItem, $typeItem, $start_level, $end_level,$status)
+    public function getAllItemUsers($playerName, $itemName, $rarityItem, $typeItem, $start_level, $end_level, $status)
     {
         $itemsUser = ItemUser::query();
         if ($itemName) {
@@ -66,17 +66,16 @@ class ItemUserRepository extends BaseRepository implements ItemUserRepositoryInt
         }
         if ($start_level && $end_level) {
             $items = $itemsUser
-                ->whereBetween('item_users.current_level',[$start_level, $end_level])
+                ->whereBetween('item_users.current_level', [$start_level, $end_level])
                 ->select('item_users.*')
                 ->get();
         }
         if ($status) {
             $items = $itemsUser
-                ->where('item_users.status',$status )
+                ->where('item_users.status', $status)
                 ->select('item_users.*')
                 ->get();
-        }
-        else{
+        } else {
             $items = $itemsUser->get();
         }
         foreach ($items as $item) {
@@ -87,7 +86,7 @@ class ItemUserRepository extends BaseRepository implements ItemUserRepositoryInt
         $currentPage = request()->get('page') ?? 1;
         $pagedData = $items->slice(((int)$currentPage - 1) * $perPage, $perPage)->all();
         $items = new LengthAwarePaginator($pagedData, count($items), $perPage, $currentPage, ['path' => url()->current()]);
-        return response()->json(['data'=>$items]);
+        return response()->json(['data' => $items]);
     }
 
     /***

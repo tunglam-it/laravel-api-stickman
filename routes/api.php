@@ -23,6 +23,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('/delete-item-user/{itemUserId}', [ItemController::class, 'deleteItemUser']);
     });
     Route::get('/get-all-users', [AdminCRUDController::class, 'index']);
+    Route::get('/get-all-users1', [AdminCRUDController::class, 'index1']);
     Route::middleware('checkAdmin')->post('/login', [AdminAuthController::class, 'login']);
 });
 
@@ -38,6 +39,7 @@ Route::prefix('player')->group(function () {
         Route::post('/refresh', [UserAuthController::class, 'refresh']);
         Route::post('/logout', [UserAuthController::class, 'logout']);
         Route::put('/change-status-user/{userId}', [UserAuthController::class, 'changeStatus']);
+        Route::get('/get-all-item-info1', [ItemController::class, 'getAllItemInfo1']);
         Route::get('/get-all-item-info', [ItemController::class, 'getAllItemInfo']);
         Route::get('/get-all-item-users', [ItemController::class, 'getAllItemUsers']);
         Route::get('/get-all-item-user-by-id/{userId}', [ItemController::class, 'getAllItemUserById']);
